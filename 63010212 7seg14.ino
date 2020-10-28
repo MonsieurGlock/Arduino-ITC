@@ -6,7 +6,6 @@ int segE = 4;
 int segF = 7;
 int segG = 8;
 int segDP = 13;
-
 int digit1 = 5;
 int digit2 = 6;
 int digit3 = 9;
@@ -40,26 +39,20 @@ void loop() {
   while(i <= 20){
     Serial.println(voltage);
     x = voltage * 100;
-    
     displaySegment(x%10);
     digitControl(4);
     x = x / 10;
-  
     displaySegment(x%10);
     digitControl(3);
     x = x / 10;
-    
      displaySegment(x%10);
     digitControl(2);
     x = x / 10;
-  
-      displaySegment(x%10);
+    displaySegment(x%10);
     digitControl(1);
     i++;
   }
-  
 }
-
 void displaySegment(int numberToDisplay)
 {
   switch (numberToDisplay)
@@ -156,7 +149,6 @@ void displaySegment(int numberToDisplay)
       break;
   }
 }
-
 void digitControl(int x) {
   if (x == 1) {
     digitalWrite(digit1, HIGH);

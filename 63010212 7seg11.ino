@@ -6,7 +6,6 @@ int segE = 4;
 int segF = 7;
 int segG = 8;
 int segDP = 13;
-
 int digit1 = 5;
 int digit2 = 6;
 int digit3 = 9;
@@ -35,31 +34,25 @@ void setup() {
   digitalWrite(digit4, LOW);
   int i, j = 0;
 }
-
 void loop() {
 
   for (int i = 0 ; i < 11 ; i++) {
     int j = 0;
-
     while (j <= 20) {
       for (k = 0 ; k < 4 ; k++) {
         if (num[i + k] != -1) {
           displaySegment(num[i + k]);
           digitControl(k + 1);
-          
         }
         else {
           digitControl(0);
         }
-        
-
       }
       j++;
 
     }
   }
 }
-
 void displaySegment(int numberToDisplay)
 {
   switch (numberToDisplay)
@@ -72,8 +65,6 @@ void displaySegment(int numberToDisplay)
       digitalWrite(segE, HIGH);
       digitalWrite(segF, HIGH);
       digitalWrite(segG, LOW);
-      //digitalWrite(seg12, HIGH);
-
       break;
     case 1:
       digitalWrite(segA, LOW);
@@ -83,7 +74,6 @@ void displaySegment(int numberToDisplay)
       digitalWrite(segE, LOW);
       digitalWrite(segF, LOW);
       digitalWrite(segG, LOW);
-      //digitalWrite(seg12, LOW);
       break;
     case 2:
       digitalWrite(segA, HIGH);
@@ -185,7 +175,6 @@ void digitControl(int x) {
     digitalWrite(digit3, LOW);
     digitalWrite(digit4, HIGH);
   }
-
   delay(2);
   x = 0;
   if (x == 0) {

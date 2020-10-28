@@ -37,8 +37,7 @@ void setup()
 }
 void loop()
 {
-  
-//displayNumber();
+  displayNumber();
 }
 void displayNumber(){
   if(digitalRead(sw12)){

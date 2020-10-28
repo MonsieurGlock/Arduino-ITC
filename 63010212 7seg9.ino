@@ -6,14 +6,16 @@ int segE = 4;
 int segF = 7;
 int segG = 8;
 int segDP = 13;
-
-int seg12 = 5;
-int seg8 = 9;
-int seg9 = 6;
-int seg6 = 10;
+int digit1 = 5;
+int digit2 = 6;
+int digit3 = 9;
+int digit4 = 10;
 int sw12 = 12;
 int temp = 0;
+int k;
+int i, j = 0;
 void setup() {
+  Serial.begin(9600);
   pinMode(segA, OUTPUT);
   pinMode(segB, OUTPUT);
   pinMode(segC, OUTPUT);
@@ -22,38 +24,22 @@ void setup() {
   pinMode(segF, OUTPUT);
   pinMode(segG, OUTPUT);
   pinMode(segDP, OUTPUT);
-  pinMode(seg12, OUTPUT);
-  pinMode (seg8, OUTPUT);
-  pinMode (seg6, OUTPUT);
-  pinMode (seg9, OUTPUT);
+  pinMode(digit1, OUTPUT);
+  pinMode (digit2, OUTPUT);
+  pinMode (digit3, OUTPUT);
+  pinMode (digit4, OUTPUT);
   pinMode(sw12, INPUT_PULLUP);
-  digitalWrite(seg12, LOW);
-  digitalWrite(seg9, LOW);
-  digitalWrite(seg8, LOW);
-  digitalWrite(seg6, LOW);
-
+  digitalWrite(digit1, LOW);
+  digitalWrite(digit2, LOW);
+  digitalWrite(digit3, LOW);
+  digitalWrite(digit4, LOW);
 }
-
 void loop() {
-  digitalWrite (seg6 , LOW);
-  digitalWrite (seg12 , HIGH);
-  displaySegment(1);
-  delay(5);
-  digitalWrite (seg12 , LOW);
-  digitalWrite (seg9 , HIGH);
-  displaySegment(2);
-  delay(5);
-  digitalWrite (seg9 , LOW);
-  digitalWrite (seg8 , HIGH);
-  displaySegment(3);
-  delay(5);
-  digitalWrite (seg8 , LOW);
-  digitalWrite (seg6 , HIGH);
-  displaySegment(4);
-  delay(5);
-
+  for(i=1 ; i <= 4 ; i++){
+    displaySegment(i);
+    digitControl(i);
+  }
 }
-
 void displaySegment(int numberToDisplay)
 {
   switch (numberToDisplay)
@@ -66,8 +52,6 @@ void displaySegment(int numberToDisplay)
       digitalWrite(segE, HIGH);
       digitalWrite(segF, HIGH);
       digitalWrite(segG, LOW);
-      //digitalWrite(seg12, HIGH);
-
       break;
     case 1:
       digitalWrite(segA, LOW);
@@ -77,7 +61,6 @@ void displaySegment(int numberToDisplay)
       digitalWrite(segE, LOW);
       digitalWrite(segF, LOW);
       digitalWrite(segG, LOW);
-      //digitalWrite(seg12, LOW);
       break;
     case 2:
       digitalWrite(segA, HIGH);
@@ -152,4 +135,31 @@ void displaySegment(int numberToDisplay)
       digitalWrite(segG, HIGH);
       break;
   }
+}
+void digitControl(int x) {
+  
+    digitalWrite(digit1, HIGH);
+    digitalWrite(digit2, LOW);
+    digitalWrite(digit3, LOW);
+    digitalWrite(digit4, LOW);
+  switch(x){
+    case 1:
+      digitalWrite(digit1, HIGH);
+      break;
+    case 2:
+      digitalWrite(digit2, HIGH);
+      break;
+    case 3:
+      digitalWrite(digit3, HIGH);
+      break;
+    case 4:
+      digitalWrite(digit4, HIGH);
+      break;      
+    }
+ 
+  delay(2);
+    digitalWrite(digit1, LOW);
+    digitalWrite(digit2, LOW);
+    digitalWrite(digit3, LOW);
+    digitalWrite(digit4, LOW);
 }

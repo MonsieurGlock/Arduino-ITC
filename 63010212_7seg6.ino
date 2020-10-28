@@ -31,9 +31,7 @@ void setup() {
   digitalWrite(seg9, LOW);
   digitalWrite(seg8, LOW);
   digitalWrite(seg6, LOW);
-
 }
-
 void loop() {
   digitalWrite (seg6 , LOW);
   digitalWrite (seg12 , HIGH);
@@ -51,9 +49,7 @@ void loop() {
   digitalWrite (seg6 , HIGH);
   displaySegment(4);
   delay(5);
-
 }
-
 void displaySegment(int numberToDisplay)
 {
 switch (numberToDisplay)
@@ -66,8 +62,6 @@ digitalWrite(segD, HIGH);
 digitalWrite(segE, HIGH);
 digitalWrite(segF, HIGH);
 digitalWrite(segG, LOW);
-//digitalWrite(seg12, HIGH);
-
 break;
 case 1: 
 digitalWrite(segA, LOW);
@@ -77,7 +71,6 @@ digitalWrite(segD, LOW);
 digitalWrite(segE, LOW);
 digitalWrite(segF, LOW);
 digitalWrite(segG, LOW);
-//digitalWrite(seg12, LOW);
 break;
 case 2: 
 digitalWrite(segA, HIGH);

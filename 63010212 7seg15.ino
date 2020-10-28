@@ -6,21 +6,18 @@ int segE = 4;
 int segF = 7;
 int segG = 8;
 int segDP = 13;
-
 int digit1 = 5;
 int digit2 = 6;
 int digit3 = 9;
 int digit4 = 10;
 int sw12 = 12;
 int temp = 0;
-
 int Vo;
 float B = 3435;
 float R1 = 10000; // R -> R
 float R0 = 10000; // R -> R_Thermister at 25 C
 float R_Thermister, T;
 float T0 = 25 + 273.5;
-
 void setup() {
   Serial.begin(9600);
   pinMode(segA, OUTPUT);
@@ -42,46 +39,33 @@ void setup() {
   digitalWrite(digit4, LOW);
   int i = 0;
 }
-
 void loop() {
   Vo = analogRead(A5);
   R_Thermister = R1 * ((float)Vo / ( 1023.0 - (float)Vo));
   int i=0,x;
-  
   T = (1.0 / T0) + (1.0 * log(R_Thermister/float(R0))) / B;
   T = 1.0 / T;
   T = T - 273.15;
-
   Serial.print("Temperature: "); 
   Serial.print(T);
   Serial.println(" C");
-  
   while(i <= 20){
- 
     x = T * 100;
-    
     displaySegment(x%10);
     digitControl(4);
     x = x / 10;
-  
     displaySegment(x%10);
     digitControl(3);
     x = x / 10;
-  
-      displaySegment(x%10);
+    displaySegment(x%10);
     digitControl(2);
     digitalWrite(segDP, LOW);
-    
     x = x/10;
-
     displaySegment(x%10);
     digitControl(1);
     i++;
-    
   }
-  
 }
-
 void displaySegment(int numberToDisplay)
 {
   switch (numberToDisplay)
@@ -204,7 +188,6 @@ void digitControl(int x) {
     digitalWrite(digit3, LOW);
     digitalWrite(digit4, HIGH);
   }
-
   delay(2);
   x = 0;
   if (x == 0) {
