@@ -27,7 +27,6 @@ void loop()
     Wire.endTransmission(); // stop transmitting
     //Serial.print("pin state : Out = "); // Print pin state
     //Serial.println(data, BIN); // print as an ASCII-encoded binary);
-
     Wire.requestFrom(device, 1); // receive 1 bytes from slave device
     x = Wire.read(); // Read pin state
    // Serial.print("\t, In = "); // Print pin state
@@ -40,7 +39,7 @@ void loop()
   Serial.print(x,BIN); // print as an ASCII-encoded binary);
   x = x & 0x0f;
   Serial.print(x);
-  if (x == 3)
+  if ((x &4)!=4)
   {
     digitalWrite(LED_BUILTIN, HIGH); // turn the LED on
   }
