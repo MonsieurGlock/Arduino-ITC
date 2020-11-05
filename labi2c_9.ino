@@ -20,26 +20,14 @@ void loop()
     }
     
   }
-   /*for (data = 0 ; data <= 255; data++) // sets the value (range from 0 to 255)
-  {
-    Wire.beginTransmission(device); // transmit to device
-    Wire.write(data); // sends one byte
-    Wire.endTransmission(); // stop transmitting
-    //Serial.print("pin state : Out = "); // Print pin state
-    //Serial.println(data, BIN); // print as an ASCII-encoded binary);
-    Wire.requestFrom(device, 1); // receive 1 bytes from slave device
-    x = Wire.read(); // Read pin state
-   // Serial.print("\t, In = "); // Print pin state
-   // Serial.println(x, BIN); // print as an ASCII-encoded binary);
-    delay(100); // wait for 100 milliseconds
-  }*/
+   
   Wire.requestFrom(device, 1); // recive 1 bytes from slave device
   x = Wire.read(); // Read pin state
   Serial.println("\t pin state : In = "); // Print pin state
   Serial.print(x,BIN); // print as an ASCII-encoded binary);
   x = x & 0x0f;
   Serial.print(x);
-  if ((x &4)!=4)
+  if (x == 3)
   {
     digitalWrite(LED_BUILTIN, HIGH); // turn the LED on
   }
