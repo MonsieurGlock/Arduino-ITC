@@ -1,0 +1,293 @@
+#include <Servo.h>
+#include <Wire.h>
+#include <hd44780.h> // main hd44780 header
+#include <hd44780_I2Cexp.h> // i2c expander i/o class header
+
+hd44780_I2Cexp lcd; // declare lcd object: auto locate & config exapander chip
+const int LCD_COLS = 16;
+const int LCD_ROWS = 2;
+Servo motor1;
+Servo motor2;
+Servo motor3;
+void moving();
+void car1Press();
+void car2Press();
+void car3Press();
+
+int x;
+int cout = 0;
+bool temp = 0;
+int car1 = 5;
+int car2 = 6;
+int car3 = 7;
+int red = 2;
+int yellow = 3;
+int green = 4;
+int sec = 0, minutes = 0, hours = 0;
+int startCout, stopCout;
+int ldr;
+
+void setup()
+{
+
+  int status;
+  status = lcd.begin(LCD_COLS, LCD_ROWS);
+  if (status) // non zero status means it was unsuccesful
+  {
+    // begin() failed so blink error code using the onboard LED if possible
+    hd44780::fatalError(status); // does not return
+  }
+  pinMode(A3, INPUT);
+  Serial.begin(9600);
+  motor1.attach(9);
+  motor2.attach(10);
+  motor3.attach(11);
+  motor1.write(90);
+  motor2.write(0);
+  motor3.write(90);
+  pinMode(car1, INPUT);
+  pinMode(car2, INPUT);
+  pinMode(car3 , INPUT);
+  pinMode(ldr , INPUT);
+  pinMode(red, OUTPUT);
+  pinMode(yellow, OUTPUT);
+  pinMode(green , OUTPUT);
+  //  attachInterrupt(digitalPinToInterrupt(car1) ,car1Press, CHANGE);
+  //  attachInterrupt(digitalPinToInterrupt(car2) ,car2Press, CHANGE);
+  //  attachInterrupt(digitalPinToInterrupt(car3) ,car3Press, CHANGE);
+ 
+}
+float r = 0;
+bool carEnter = 0;
+bool flood1 = 0;
+bool flood2 = 0;
+bool flood3 = 0;
+int num;
+void loop()
+{
+  x = analogRead(A3);
+  Serial.println(x);
+  if (x <= 900 && temp == 0 &&(flood1 == 0 || flood2 == 0 || flood3 == 0)) {
+    cout++;
+    temp = 1;
+    carEnter = 1;
+  } else if (x > 900) {
+    temp = 0;
+  }
+  if (carEnter == 0 )
+  {
+    
+  //lcd.setCursor(8, 1);
+  lcd.print("Count car   ");
+  lcd.print(cout);
+  lcd.setCursor(0, 2);
+  lcd.print("R");
+  lcd.print(flood3);
+   lcd.setCursor(7, 2);
+   lcd.print("M");
+  lcd.print(flood2);
+   lcd.setCursor(14, 2);
+   lcd.print("L");
+   lcd.print(flood1);
+   delay(50);
+   lcd.clear();
+  
+  }
+
+  Serial.print(flood1);
+  Serial.print(" ");
+  Serial.print(flood2);
+  Serial.print(" ");
+  Serial.print(flood3);
+  //  Serial.println(analogRead(ldr));
+  //  Serial.print(digitalRead(car1));
+  //  Serial.print(digitalRead(car2));
+  //  Serial.print(digitalRead(car3));
+
+  if (carEnter == 1 )
+  {
+    if (flood1 == 0 && flood2 == 0 && flood3 == 0) {
+      flood3 = 1;
+      lcd.print("  Please go to ");
+      lcd.setCursor(1, 2);
+      lcd.print("  Station  1");
+      delay(1000);
+      lcd.clear();
+      carEnter = 0;
+      
+    }
+    else if (flood1 == 1 && flood2 == 0 && flood3 == 0) {
+      //Go to 3
+      flood3 = 1;
+       lcd.print("  Please go to ");
+      lcd.setCursor(1, 2);
+      lcd.print("  Station  1");
+      delay(1000);
+      lcd.clear();
+      carEnter = 0;
+    }
+
+    else if (flood1 == 0 && flood2 == 1 && flood3 == 0) {
+      //Go to 3
+      flood3 = 1;
+       lcd.print("  Please go to ");
+      lcd.setCursor(1, 2);
+      lcd.print("  Station  1");
+      delay(1000);
+      lcd.clear();
+      carEnter = 0;
+    }
+    else if (flood1 == 0 && flood2 == 0 && flood3 == 1) {
+      //Go to 2
+       lcd.print("  Please go to ");
+      lcd.setCursor(1, 2);
+      lcd.print("  Station  2");
+      delay(1000);
+      lcd.clear();
+      moving();
+      flood2 = 1;
+      carEnter = 0;
+    }
+    else if (flood1 == 1 && flood2 == 1 && flood3 == 0) {
+      //Go to 3
+      flood3 = 1;
+      lcd.print("  Please go to ");
+      lcd.setCursor(1, 2);
+      lcd.print("  Station  1");
+      delay(1000);
+      lcd.clear();
+      carEnter = 0;
+    }
+    else if (flood1 == 1 && flood2 == 0 && flood3 == 1) {
+      //Go to 2
+      lcd.print("  Please go to ");
+      lcd.setCursor(1, 2);
+      lcd.print("  Station  2");
+      delay(1000);
+      lcd.clear();
+      moving();
+      flood2 = 1;
+      carEnter = 0;
+    }
+    else if (flood1 == 0 && flood2 == 1 && flood3 == 1) {
+      //Go to 1
+      flood1 = 1;
+      lcd.print("  Please go to ");
+      lcd.setCursor(1, 2);
+      lcd.print("  Station  3");
+      delay(1000);
+      lcd.clear();
+      carEnter = 0;
+    }
+    num = 0;
+    if (flood1 == 1) {
+      num++;
+    }
+    if (flood2 == 1) {
+      num++;
+    }
+    if (flood3 == 1) {
+      num++;
+    }
+    digitalWrite(green , LOW);
+    digitalWrite(yellow , LOW);
+    digitalWrite(red , LOW);
+    if (num == 0 || num == 1) {
+      digitalWrite(green , HIGH);
+    } else if (num == 2) {
+      digitalWrite(yellow , HIGH);
+    } else if (num == 3) {
+      digitalWrite(red , HIGH);
+    }
+
+
+
+
+  }
+  if (digitalRead(car1) == 0) {
+    Serial.print("WORK!!");
+    flood1 = 0;
+  }
+  if (digitalRead(car2) == 0) {
+    moving();
+    flood2 = 0;
+  }
+  if (digitalRead(car3) == 0) {
+    flood3 = 0;
+  }
+
+
+
+  /*if (digitalRead(car2) == 0) {
+    moving();
+    flood2 = 0;
+    }
+
+    if (digitalRead(car1) == 0) {
+    flood1 = 0;
+
+    }
+    if (digitalRead(car3) == 0) {
+    flood3 = 0;
+
+    }*/
+  
+
+}
+
+
+
+void moving() {
+  lcd.print("Motors are");
+  lcd.setCursor(8,2);
+  lcd.print("working");
+  for (r = 90 ; r > 0 ; r -= 0.1) {
+    motor3.write(r);
+    delay(1);
+  }
+  for (r = 90 ; r > 2 ; r -= 0.1) {
+    motor1.write(r);
+    motor2.write(90 - r);
+    delay(1);
+  }
+  delay(2000);
+
+  for (r = 2 ; r < 90 ; r += 0.1) {
+    motor1.write(r);
+    motor2.write(90 - r);
+    delay(1);
+  }
+  for (r = 0 ; r < 90 ; r += 0.1) {
+    motor3.write(r);
+    delay(1);
+  }
+}
+
+void car1Press() {
+  if (flood1 == 1) {
+    Serial.print("OK");
+    flood1 = 0;
+  } else {
+    Serial.print("Error");
+    //Something error
+  }
+}
+
+void car2Press() {
+  if (flood2 == 1) {
+    moving();
+    flood2 = 0;
+  } else {
+    Serial.print("Error");
+    //Something error
+  }
+}
+
+void car3Press() {
+  if (flood3 == 1) {
+    flood3 = 0;
+  } else {
+    Serial.print("Error");
+    //Something error
+  }
+}
