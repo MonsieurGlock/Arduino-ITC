@@ -1,0 +1,192 @@
+
+#include <Servo.h>
+#include <Wire.h>
+#include <hd44780.h> // main hd44780 header
+#include <hd44780_I2Cexp.h> // i2c expander i/o class header
+
+hd44780_I2Cexp lcd; // declare lcd object: auto locate & config exapander chip
+const int LCD_COLS = 16;
+const int LCD_ROWS = 2;
+Servo motor1;
+Servo motor2;
+Servo motor3;
+void moving();
+
+int x;
+int cout = 0;
+bool temp = 0;
+int car1 = 12;
+int car2 = 13;
+int car3 = 8; 
+int red = 0;
+int yellow = 1;
+int green = 2;
+int sec, minutes, hours;
+int startCout, stopCout;
+void setup()
+{
+  /*noInterrupts(); // disable all interrupts
+  // Clear Timer/Counter Control Register for Interrupt 1, bytes A and B (TCCR1?)
+  TCCR1A = 0; // Clear TCCR1A/B registers
+  TCCR1B = 0;
+  TCNT1 = 0; // Initialize counter value to 0 (16-bit counter register)
+  // set compare match register for TIMER1: CLOCKFREQUENCY / frequency / prescaler - 1
+  OCR1A = 62499; // 16MHz/(1Hz*256) - 1 (must be <65536)
+  // Timer/Counter Control Register for Interrupt 1 on register B
+  TCCR1B |= (1 << WGM12); // Mode 4, turn on CTC mode
+  // Clock Select Bit, Set CS12, CS11 and CS10 bits
+  TCCR1B |= (1 << CS12); // Set CS12 bit for 256 prescaler
+  TIMSK1 |= (1 << OCIE1A); // enable timer compare interrupt , The value in OCR1A is used for compare
+  interrupts();*/
+  int status;
+  status = lcd.begin(LCD_COLS, LCD_ROWS);
+  if (status) // non zero status means it was unsuccesful
+  {
+    // begin() failed so blink error code using the onboard LED if possible
+    hd44780::fatalError(status); // does not return
+  }
+  pinMode(A3, INPUT);
+  Serial.begin(9600);
+  motor1.attach(9);
+  motor2.attach(10);
+  motor3.attach(11);
+  motor1.write(90);
+  motor2.write(0);
+  motor3.write(90);
+  pinMode(car1, INPUT);
+  pinMode(car2, INPUT);
+  pinMode(car3 , INPUT);
+  pinMode(red, OUTPUT);
+  pinMode(yellow, OUTPUT);
+  pinMode(green , OUTPUT);
+}
+float r = 0;
+bool carEnter = 0;
+bool flood1 = 0;
+bool flood2 = 0;
+bool flood3 = 0;
+void loop()
+{
+
+  x = analogRead(A3);
+  Serial.println(x);
+  if (x <= 900 && temp == 0) {
+    cout++;
+    temp = 1;
+    carEnter = 1;
+  } else if (x > 900) {
+    temp = 0;
+  }
+  lcd.print(cout);
+  /*lcd.clear();
+    for(r=0 ; r <90 ; r+=0.1){
+    motor1.write(r);
+    motor2.write(r);
+    delay(1);
+    }
+    for(r=90 ; r > 0 ; r-=0.1){
+     motor1.write(r);
+    motor2.write(r);
+    delay(1);
+    }*/
+
+  Serial.print(flood1);
+  Serial.print(" ");
+  Serial.println(flood2);
+  if (carEnter == 1) {
+    if (flood1 == 0 && flood2 == 0 && flood3 == 0) {
+      //Go to 3
+      flood3 = 1;
+      carEnter = 0;
+    }
+    else if (flood1 == 1 && flood2 == 0 && flood3 == 0) {
+      //Go to 3
+      flood3 = 0;
+      carEnter = 0;
+    }
+
+    else if (flood1 == 0 && flood2 == 1 && flood3 == 0) {
+      //Go to 3
+      flood3 = 1;
+      carEnter = 0;
+    }
+    else if (flood1 == 0 && flood2 == 0 && flood3 == 1) {
+      //Go to 2
+      moving();
+      flood2 = 1;
+      carEnter = 0;
+    }
+    else if (flood1 == 1 && flood2 == 1 && flood3 == 0) {
+      //Go to 3
+      flood3 = 1;
+      carEnter = 0;
+    }
+    else if (flood1 == 1 && flood2 == 0 && flood3 == 1) {
+      //Go to 2
+      moving();
+      flood2 = 1;
+      carEnter = 0;
+    }
+    else if (flood1 == 0 && flood2 == 1 && flood3 == 1) {
+      //Go to 1
+      flood1 = 1;
+      carEnter = 0;
+    }
+    
+  }
+
+
+
+  if (digitalRead(car2) == 0) {
+      moving();
+      flood2 = 0;
+    }
+  
+  if (digitalRead(car1) == 0) {
+    flood1 = 0;
+
+  }
+  if (digitalRead(car3) == 0) {
+    flood3 = 0;
+
+  }
+
+}
+
+/*ISR(TIMER1_COMPA_vect)
+{
+  sec += 1;
+  if (sec >= 60)
+  {
+    minutes++;
+    sec = 0;
+  }
+  if (minutes >= 60)
+  {
+    hours++;
+    minutes = 0;
+  }
+}*/
+
+void moving() {
+  for (r = 90 ; r > 0 ; r -= 0.1) {
+    motor3.write(r);
+  }
+  for (r = 90 ; r > 2 ; r -= 0.1) {
+    motor1.write(r);
+    motor2.write(90 - r);
+  }
+  startCout = sec;
+  startCout = startCout + 5;
+  if (startCout == sec) {
+    for (r = 2 ; r < 90 ; r += 0.1) {
+      motor1.write(r);
+      motor2.write(90 - r);
+    }
+    for (r = 0 ; r < 90 ; r += 0.1) {
+      motor3.write(r);
+    }
+    startCout = 0;
+  }
+
+}
